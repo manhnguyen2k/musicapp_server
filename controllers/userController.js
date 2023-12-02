@@ -1,4 +1,4 @@
-const db = require('../config/firestore.js');
+const {db} = require('../config/firestore.js');
 
 const Playlist = require('../modal/playlist.js');
 //const db = getFirestore(firebaseApp);
@@ -6,6 +6,7 @@ const UserSchema = require('../modal/user.js')
 class UserController {
   getPlaylist = async (req, res, next) => {
     try {
+      console.log(req.query.id)
       const collectionRef = db.collection('playlist');
       const snapshot = await collectionRef.where('createby', '==', req.query.id).get();
 
@@ -18,7 +19,7 @@ class UserController {
         });
       });
 
-      //console.log(data);
+      console.log(data);
       return res.status(200).json({
         code: 200,
         message: 'Create playlist successfully',
@@ -112,8 +113,8 @@ class UserController {
     try {
       const userId = req.params.userId; // Assuming userId is in the URL params
       const songIdToDelete = req.params.songId; // Assuming songId is in the URL params
-      console.log(userId )
-      console.log(songIdToDelete )
+      //console.log(userId )
+      //console.log(songIdToDelete )
       // Check if userId and songIdToDelete are provided
       if (!userId || !songIdToDelete) {
         return res.status(400).json({ error: 'Missing userId or songId in request parameters.' });
@@ -136,7 +137,7 @@ class UserController {
         userData.email,
         userData.fav_playlist
       );
-       console.log(user)
+       //console.log(user)
       // Check if the song exists in the fav_playlist
       const songIndex = user?.fav_playlist.findIndex((song) => song.encodeId === songIdToDelete);
 

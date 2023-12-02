@@ -16,7 +16,7 @@ class ZingController {
 
   getHome(req, res) {
     ZingMp3.getHome().then((data) => {
-     console.log(req)
+     //console.log(req)
       res.json(data)
     })
   }

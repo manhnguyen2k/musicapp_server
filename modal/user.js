@@ -1,8 +1,6 @@
 class UserSchema {
     constructor(username, email, fav_playlist = []) {
-     
       this.username = username;
-    
       this.email = email;
       this.fav_playlist = fav_playlist;
     }

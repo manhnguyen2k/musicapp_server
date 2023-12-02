@@ -3,7 +3,8 @@ const router = express.Router()
 const userController = require('../../controllers/userController')
 const ZingController = require("../../controllers/ZingController")
 const bodyParser = require('body-parser');
-
+const AuthController = require('../../controllers/authController')
+const decodeToken = require('../../controllers/middleware/index')
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 // getSong
@@ -11,15 +12,16 @@ router.get("/song", ZingController.getSong)
 
 // getDetailPlaylist
 router.get("/detailplaylist", ZingController.getDetailPlaylist)
-router.get("/playlist", userController.getPlaylist)
-router.get("/playlist/songs", userController.getPlaylistSong)
-router.get("/favlist", userController.getFavList)
-router.post("/addplaylist", userController.createPlayList)
-router.post("/addsongtofav", userController.addSongToFav)
-router.delete('/deleteSongFromFav/:userId/:songId', userController.deleteSongFromFav);
-
+router.get("/playlist",decodeToken, userController.getPlaylist)
+router.get("/playlist/songs",decodeToken, userController.getPlaylistSong)
+router.get("/favlist",decodeToken, userController.getFavList)
+router.post("/addplaylist",decodeToken, userController.createPlayList)
+router.post("/addsongtofav",decodeToken, userController.addSongToFav)
+router.delete('/deleteSongFromFav/:userId/:songId',decodeToken, userController.deleteSongFromFav);
+//
+router.post('/login', AuthController.logIn);
 // getHome
-router.get("/home", ZingController.getHome)
+router.get("/home",ZingController.getHome)
 
 // getTop100
 router.get("/top100", ZingController.getTop100)
