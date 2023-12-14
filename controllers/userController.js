@@ -1,9 +1,38 @@
 const {db} = require('../config/firestore.js');
-
+const validator = require('validator');
 const Playlist = require('../modal/playlist.js');
+const unidecode = require('unidecode');
 //const db = getFirestore(firebaseApp);
 const UserSchema = require('../modal/user.js')
 class UserController {
+  createDoc = async (req, res, next)=>{
+
+    try {
+      const  docId  = req.body.docId; // Nhận UID từ request
+  console.log(docId)
+     // const userRef = db.collection('user').add;
+      await db.collection('user').doc(docId).set({
+       
+        fav_playlist: [],
+      });
+      // Tạo một document mới trong Firestore chỉ với các trường tên
+    
+      return res.status(200).json({
+        code: 200,
+        message: 'Create doc successfully',
+      });
+     // res.status(200).send('Firestore document created successfully!');
+    } catch (error) {
+      //console.error('Error creating Firestore document:', error);
+      res.status(500).send("Internal Server Error");
+    }
+  
+
+
+
+  }
+
+
   getPlaylist = async (req, res, next) => {
     try {
       console.log(req.query.id)
@@ -74,6 +103,10 @@ class UserController {
       res.status(500).send("Internal Server Error");
     }
   }
+
+
+
+
   getFavList = async (req, res, next) => {
     try {
       const userId = req.query.userId; // Sử dụng params hoặc query tùy thuộc vào cách bạn truyền tham số
@@ -94,7 +127,6 @@ class UserController {
       // Lấy thông tin user
       const userData = userDoc.data();
 
-      // Trả về fav_playlist của user
       return res.status(200).json({
         code: 200,
         message: 'Fav playlist retrieved successfully',
@@ -107,6 +139,52 @@ class UserController {
   };
 
 
+
+  searchSongInFavList = async (req, res, next) => {
+    try {
+      const userId = req.query.userId;
+      const searchQuery = req.query.searchQuery;
+      console.log(searchQuery)
+      const lowercaseSearchQuery = searchQuery.toLowerCase();
+
+      const sanitizedSearchQuery = sanitizeSearchQuery(searchQuery.toLowerCase());
+      console.log(sanitizedSearchQuery)
+      if (!userId || !searchQuery) {
+        return res.status(400).json({ error: 'Missing userId or searchQuery in request parameters.' });
+      }
+
+
+      const userRef = db.collection('user').doc(userId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const userData = userDoc.data();
+    
+      if (!searchQuery) {
+        //console.log('aaaaaaaaaaaaaaaa')
+        return res.status(200).json({
+          code: 200,
+          message: 'All favorites retrieved successfully',
+          data: { userId, fav_playlist: userData.fav_playlist }
+        });
+      }
+      const searchResults = userData.fav_playlist.filter(item =>
+        unidecode(item.title.toLowerCase()).includes(lowercaseSearchQuery)
+      );
+      console.log(searchResults)
+      return res.status(200).json({
+        code: 200,
+        message: 'Search results retrieved successfully',
+        data: { userId, searchQuery, fav_playlist: searchResults }
+      });
+    } catch (error) {
+      console.error('Error searching for song in favList:', error);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  };
 
 
   deleteSongFromFav = async (req, res, next) => {
@@ -162,6 +240,8 @@ class UserController {
       res.status(500).json({ error: 'Internal server error.' });
     }
   };
+
+
   createPlayList = async (req, res, next) => {
     try {
       // Lấy dữ liệu từ body của yêu cầu
@@ -240,7 +320,9 @@ async function addRecord(collectionName, data) {
   const collectionRef = db.collection(collectionName);
   const result = await collectionRef.add(data);
 
-  return result.id; // Trả về ID của bản ghi mới được thêm vào
+  return result.id; 
 }
-
+function sanitizeSearchQuery(searchQuery) {
+  return searchQuery.replace(/[^\w\s]/gi, '');
+}
 module.exports = new UserController();

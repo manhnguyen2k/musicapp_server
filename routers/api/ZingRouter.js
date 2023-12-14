@@ -11,10 +11,12 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get("/song", ZingController.getSong)
 
 // getDetailPlaylist
+router.post("/createDoc", userController.createDoc)
 router.get("/detailplaylist", ZingController.getDetailPlaylist)
 router.get("/playlist",decodeToken, userController.getPlaylist)
 router.get("/playlist/songs",decodeToken, userController.getPlaylistSong)
 router.get("/favlist",decodeToken, userController.getFavList)
+router.get("/search",decodeToken,userController.searchSongInFavList)
 router.post("/addplaylist",decodeToken, userController.createPlayList)
 router.post("/addsongtofav",decodeToken, userController.addSongToFav)
 router.delete('/deleteSongFromFav/:userId/:songId',decodeToken, userController.deleteSongFromFav);
@@ -45,7 +47,7 @@ router.get("/artistsong", ZingController.getArtistSong)
 router.get("/lyric", ZingController.getLyric)
 
 // search
-router.get("/search", ZingController.search)
+router.get("/homesearch", ZingController.search)
 
 // getListMV
 router.get("/listmv", ZingController.getListMV)

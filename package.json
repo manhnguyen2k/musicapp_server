@@ -20,6 +20,8 @@
     "firebase": "^10.7.0",
     "firebase-admin": "^11.11.1",
     "https": "^1.0.0",
+    "unidecode": "^0.1.8",
+    "validator": "^13.11.0",
     "zingmp3-api-full": "^1.0.14"
   }
 }

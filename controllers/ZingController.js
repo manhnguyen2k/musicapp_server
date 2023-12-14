@@ -64,7 +64,11 @@ class ZingController {
   }
 
   search(req, res) {
-    ZingMp3.search(req.query.keyword).then((data) => {
+    //console.log(req.query.keyword)
+    const searchData = sanitizeSearchQuery(req.query.keyword.toLowerCase())
+    console.log(searchData)
+    ZingMp3.search(searchData).then((data) => {
+      console.log(data)
       res.json(data)
     })
   }
@@ -88,5 +92,7 @@ class ZingController {
   }
 
 }
-
+function sanitizeSearchQuery(searchQuery) {
+  return searchQuery.replace(/[^\w\s]/gi, '');
+}
 module.exports = new ZingController
